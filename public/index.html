@@ -14,7 +14,7 @@
       <div class="logo">A</div>
       <div>
         <h1>ANB Private Chat</h1>
-        <p class="subtitle">Just two people. One private room.</p>
+        <p class="subtitle">Two people · Direct browser connection</p>
       </div>
       <span class="lock">PRIVATE</span>
     </header>
@@ -23,7 +23,7 @@
       <div class="hero-icon">✦</div>
       <h2>Your private space</h2>
       <p>Create a room and share its invitation link with one person.</p>
-      <button id="createBtn" class="primary">＋ Create private room</button>
+      <button id="createBtn" class="primary">＋ Create peer-to-peer invite</button>
       <p class="note">No account required · Text only · Two people maximum</p>
     </section>
 
@@ -39,16 +39,15 @@
       <form id="sendForm" class="composer">
         <input id="messageInput" maxlength="2000"
           placeholder="Write a message…" autocomplete="off" required>
-        <button class="primary" type="submit">Send</button>
+        <button id="sendBtn" class="primary" type="submit" disabled>Send</button>
       </form>
-      <button id="leaveBtn" class="leave">End chat & delete room</button>
+      <button id="leaveBtn" class="leave">End chat</button>
       <p class="note">Do not share this invite link publicly.</p>
     </section>
 
     <p id="notice" class="notice" role="status"></p>
     <footer>ANB Private Chat · Minimal by design</footer>
   </main>
-  <script src="./config.js"></script>
-  <script src="./app.js"></script>
+    <script src="./app.js"></script>
 </body>
 </html>
