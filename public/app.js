@@ -236,13 +236,24 @@
   });
 
   $("applyAnswer").addEventListener("click", async () => {
+    const btn = $("applyAnswer");
     try {
-      if (!pc || role !== "host") throw new Error("Create an invite first.");
+      if (!pc || role !== "host") throw new Error("Create a fresh invite first.");
+      if (pc.signalingState !== "have-local-offer") {
+        btn.disabled = true;
+        throw new Error(
+          pc.signalingState === "stable"
+            ? "Answer already applied or invite expired. If not connected, tap End chat and create a fresh invite."
+            : "Connection is not waiting for an answer. Create a fresh invite."
+        );
+      }
       const answer = decode($("answerInput").value.trim());
       if (answer.type !== "answer") throw new Error("This code is not an answer.");
+      btn.disabled = true;
       await pc.setRemoteDescription(answer);
-      noticeText("Answer accepted. Waiting for the direct connection…");
+      noticeText("Answer applied once. Waiting for the direct connection…");
     } catch (err) {
+      if (pc && pc.signalingState === "have-local-offer") btn.disabled = false;
       noticeText("Could not apply answer: " + (err.message || err));
     }
   });
