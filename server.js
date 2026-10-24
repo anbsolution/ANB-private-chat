@@ -9,6 +9,33 @@ app.disable("x-powered-by");
 app.use(express.json({ limit: "2kb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
+const allowedOrigin = process.env.PUBLIC_ORIGIN || "";
+app.use((req, res, next) => {
+  if (!req.path.startsWith("/api/")) return next();
+
+  const origin = req.headers.origin;
+  const localOrigin = typeof origin === "string" &&
+    /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+  const originAllowed = !origin ||
+    (allowedOrigin ? origin === allowedOrigin : localOrigin);
+
+  if (origin && !originAllowed) {
+    return res.status(403).json({ error: "Origin not allowed." });
+  }
+
+  if (originAllowed && origin) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Vary", "Origin");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  }
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(originAllowed ? 204 : 403);
+  }
+  next();
+});
+
 const server = http.createServer(app);
 const wss = new WebSocketServer({ noServer: true });
 const rooms = new Map();

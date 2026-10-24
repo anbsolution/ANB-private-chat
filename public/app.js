@@ -7,6 +7,24 @@ const messagesEl = $("messages");
 const input = $("messageInput");
 const notice = $("notice");
 
+const chatConfig = window.ANB_CHAT_CONFIG || {};
+const backendUrl = String(chatConfig.backendUrl || "").trim().replace(/\/+$/, "");
+const isGitHubPages = location.hostname === "github.io" ||
+  location.hostname.endsWith(".github.io");
+const backendConfigured = !isGitHubPages || Boolean(backendUrl);
+
+function apiEndpoint(path) {
+  return new URL(path, backendUrl || location.origin).toString();
+}
+
+function websocketEndpoint(id) {
+  const url = new URL("/chat", backendUrl || location.origin);
+  url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+  url.searchParams.set("room", id);
+  return url.toString();
+}
+
+
 let socket = null;
 let roomId = null;
 let leaving = false;
@@ -38,6 +56,10 @@ function addMessage(message) {
 }
 
 function connect(id) {
+  if (!backendConfigured) {
+    showNotice("Backend not configured. Set backendUrl in public/config.js.");
+    return;
+  }
   roomId = id;
   leaving = false;
   home.classList.add("hidden");
@@ -47,7 +69,7 @@ function connect(id) {
 
   const protocol = location.protocol === "https:" ? "wss:" : "ws:";
   socket = new WebSocket(
-    protocol + "//" + location.host + "/chat?room=" + encodeURIComponent(id)
+    websocketEndpoint(id)
   );
 
   socket.onopen = () => {
@@ -83,11 +105,15 @@ function connect(id) {
 }
 
 $("createBtn").addEventListener("click", async () => {
+  if (!backendConfigured) {
+    showNotice("Website is deployed, but the chat backend URL is not configured yet.");
+    return;
+  }
   $("createBtn").disabled = true;
   showNotice("Creating private room…");
 
   try {
-    const response = await fetch("/api/rooms", { method: "POST" });
+    const response = await fetch(apiEndpoint("/api/rooms"), { method: "POST" });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Could not create room");
     connect(data.roomId);
@@ -115,7 +141,7 @@ $("sendForm").addEventListener("submit", (event) => {
 });
 
 $("copyBtn").addEventListener("click", async () => {
-  const link = location.origin + "/?room=" + encodeURIComponent(roomId);
+  const link = location.origin + location.pathname + "?room=" + encodeURIComponent(roomId);
 
   try {
     await navigator.clipboard.writeText(link);
