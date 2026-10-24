@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101828">
+  <meta name="description" content="A simple private two-person text chat.">
+  <title>ANB Private Chat</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <div class="logo">A</div>
+      <div>
+        <h1>ANB Private Chat</h1>
+        <p class="subtitle">Just two people. One private room.</p>
+      </div>
+      <span class="lock">PRIVATE</span>
+    </header>
+
+    <section id="home" class="panel">
+      <div class="hero-icon">✦</div>
+      <h2>Your private space</h2>
+      <p>Create a room and share its invitation link with one person.</p>
+      <button id="createBtn" class="primary">＋ Create private room</button>
+      <p class="note">No account required · Text only · Two people maximum</p>
+    </section>
+
+    <section id="chat" class="panel hidden">
+      <div class="roombar">
+        <div>
+          <strong>Private room</strong>
+          <p id="status">Connecting…</p>
+        </div>
+        <button id="copyBtn" class="secondary">Copy invite link</button>
+      </div>
+      <div id="messages" class="messages" aria-live="polite"></div>
+      <form id="sendForm" class="composer">
+        <input id="messageInput" maxlength="2000"
+          placeholder="Write a message…" autocomplete="off" required>
+        <button class="primary" type="submit">Send</button>
+      </form>
+      <button id="leaveBtn" class="leave">End chat & delete room</button>
+      <p class="note">Do not share this invite link publicly.</p>
+    </section>
+
+    <p id="notice" class="notice" role="status"></p>
+    <footer>ANB Private Chat · Minimal by design</footer>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
